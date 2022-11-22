@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: push-image-task
+spec:
+  params:
+    - name: image
+      type: string
+      description: image URL to push
+  steps:
+    - name: image-push
+      image: docker:stable
+      script: |
+        #!/usr/bin/env sh
+        docker login registry.cn-hangzhou.aliyuncs.com
+        docker push  $(params.image)
+      volumeMounts:
+      - name: docker-sock
+        mountPath: /var/run/docker.sock
+  volumes:
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
